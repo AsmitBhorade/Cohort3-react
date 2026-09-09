@@ -1,77 +1,122 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { nanoid } from "nanoid";
 
-const Form = ({setusers,setToggle}) => {
+const Form = ({
+  users,
+  setUsers,
+  setToggle,
+  updatedData,
+  setUpdatedData,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-    const {register,handleSubmit,reset, formState: {errors}}=useForm({
-        mode:"onChange" // default it is onSubmit 
-    })
+  useEffect(() => {
+    reset(updatedData || {});
+  }, [updatedData, reset]);
 
-    return (
-    <form 
-    onSubmit={handleSubmit((data)=> {
-        console.log(data)
-        reset()
-        setusers(prev=>[...prev,data])
-        setToggle(prev=>!prev)
-    })}
-    className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
-      <h2 className="mb-6 text-2xl font-bold text-gray-800">Create User</h2>
+  const formSubmit = (data) => {
+    let updatedUsers;
 
-      <div className="mb-4">
-        <label className="mb-2 block font-medium text-gray-700">Name</label>
+    if (updatedData) {
+      updatedUsers = users.map((user) =>
+        user.id === updatedData.id
+          ? { ...data, id: updatedData.id }
+          : user
+      );
+    } else {
+      updatedUsers = [...users, { ...data, id: nanoid() }];
+    }
+
+    setUsers(updatedUsers);
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    reset();
+    setUpdatedData(null);
+    setToggle(true);
+  };
+
+  const cancelForm = () => {
+    reset();
+    setUpdatedData(null);
+    setToggle(true);
+  };
+
+  return (
+    <div className="flex justify-center p-6">
+      <form
+        onSubmit={handleSubmit(formSubmit)}
+        className="flex w-full max-w-sm flex-col gap-3 rounded-xl bg-white p-6 shadow-lg"
+      >
+        <h1 className="text-xl font-bold text-gray-800">
+          {updatedData ? "Update User" : "Create User"}
+        </h1>
+
         <input
-        {...register("name",{
-            required:"Name is required"
-        })}
+          {...register("name", {
+            required: "Name is required",
+          })}
+          className="rounded border p-2 outline-none"
           type="text"
-          placeholder="Enter full name"
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+          placeholder="Name"
         />
-      </div>
-        {errors.name && <p className="text-red-400">{errors.name.message}</p>}
+        {errors.name && (
+          <p className="text-sm text-red-500">{errors.name.message}</p>
+        )}
 
-
-      <div className="mb-4">
-        <label className="mb-2 block font-medium text-gray-700">Contact</label>
         <input
-        {...register("mobile",{
-            required:"Number is required", // this error is saved in the error field of formState
-            minLength:{
-                value:10,
-                message:"Min digits should be 10"
+          {...register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /^\S+@\S+\.\S+$/,
+              message: "Enter a valid email",
             },
-            maxLength:{
-                value:10,
-                message:"Max digits should be 10"
-            }
-        })}
-          type="number"
-          placeholder="Enter contact number"
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
-        />
-      </div>
-        {errors.mobile && <p className="text-red-400">{errors.mobile.message}</p>}
-
-
-      <div className="mb-6">
-        <label className="mb-2 block font-medium text-gray-700">Email</label>
-        <input
-        {...register("email",{
-            required:"Email is required"
-        })}
+          })}
+          className="rounded border p-2 outline-none"
           type="email"
-          placeholder="Enter email address"
-          className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+          placeholder="Email"
         />
-      </div>
-        {errors.email && <p className="text-red-400">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="text-sm text-red-500">{errors.email.message}</p>
+        )}
 
+        <input
+          {...register("mobile", {
+            required: "Mobile number is required",
+            pattern: {
+              value: /^\d{10}$/,
+              message: "Mobile number must contain 10 digits",
+            },
+          })}
+          className="rounded border p-2 outline-none"
+          type="tel"
+          placeholder="Mobile"
+        />
+        {errors.mobile && (
+          <p className="text-sm text-red-500">{errors.mobile.message}</p>
+        )}
 
-      <button className="w-full cursor-pointer rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700">
-        Save User
-      </button>
-    </form>
+        <button
+          type="submit"
+          className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white"
+        >
+          {updatedData ? "Update" : "Add User"}
+        </button>
+
+        <button
+          type="button"
+          onClick={cancelForm}
+          className="rounded-lg bg-gray-500 px-4 py-2 font-semibold text-white"
+        >
+          Cancel
+        </button>
+      </form>
+    </div>
   );
 };
 
