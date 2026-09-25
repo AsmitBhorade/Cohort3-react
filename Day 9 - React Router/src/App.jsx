@@ -1,14 +1,15 @@
-import React from 'react'
-import Navbar from './components/Navbar'
-import AppRoutes from './components/AppRoutes'
+import React from "react";
+import Navbar from "./components/Navbar";
+
+import AppRoutes from "./routes/AppRoutes";
 
 const App = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <Navbar />
       <AppRoutes />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App; 
