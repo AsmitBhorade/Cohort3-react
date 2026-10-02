@@ -4,9 +4,11 @@ export const Auth=createContext();
 
 export const AuthProvider= ({children}) =>{
 
-    const [registeredUsers, setregisteredUsers] = useState([])
+    const [registeredUsers, setregisteredUsers] = useState(
+    JSON.parse(localStorage.getItem("registeredUsers")) || [] )
 
-    const [loggedInUser, setloggedInUser] = useState([])
+    const [loggedInUser, setloggedInUser] = useState(
+    JSON.parse(localStorage.getItem("LoginUser")) )
 
     console.log("registered users->", registeredUsers);
     console.log("loggedin users->", loggedInUser);

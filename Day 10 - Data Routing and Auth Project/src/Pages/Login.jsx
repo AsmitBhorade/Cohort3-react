@@ -5,13 +5,26 @@ import { Auth } from '../Context/AuthContext';
 
 const Login = () => {
 
-    const {loggedInUser,setloggedInUser} = useContext(Auth)
+    const {registeredUsers,setloggedInUser} = useContext(Auth)
 
   const navigate= useNavigate();
 
   const formsubmit = (data)=>{
-    console.log(data);
-    setloggedInUser([...loggedInUser,data])
+    let user = registeredUsers.find((val)=>{
+      return val.email===data.email && val.password===data.password
+    })
+
+    if(!user){
+      alert("Invald")
+      reset()
+      return
+    }
+    
+    setloggedInUser(user)
+    localStorage.setItem('LoginUser',JSON.stringify(user))
+    alert("Login Success")
+    navigate("/main")
+
     reset()
   }
 

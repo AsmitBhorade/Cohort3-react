@@ -19,8 +19,13 @@ const Register = () => {
 
   const formsubmit = (data) => {
     console.log(data);
-    setregisteredUsers([...registeredUsers,data]) // can use prev also here
+    let arr = [...registeredUsers, data]; // can use prev also here
+    setregisteredUsers(arr) 
     alert("User registered")
+
+    localStorage.setItem("registeredUsers", JSON.stringify(arr));
+    navigate("/");
+
     reset();
   };
 
